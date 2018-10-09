@@ -43,8 +43,8 @@ import java.util.UUID;
 public class Util {
 
     private String strEndPoint = "https://oss-cn-shanghai.speedycloud.org";
-    private String strAccessKey = "liul";
-    private String strSecretKey = "liul123";
+    private String strAccessKey = "your Accesskey";
+    private String strSecretKey = "your SecretKey";
 
     private AmazonS3Client sS3Client;
     private CognitoCachingCredentialsProvider sCredProvider;
