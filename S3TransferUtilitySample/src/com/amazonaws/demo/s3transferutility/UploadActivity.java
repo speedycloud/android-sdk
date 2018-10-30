@@ -412,7 +412,8 @@ public class UploadActivity extends ListActivity {
                 // 15 Minutes
                 currentTime += 15 * 60 * 1000;
                 Date date = new Date(currentTime);
-                URL objectUrl = util.getS3Client(getApplicationContext()).generatePresignedUrl(Constants.BUCKET_NAME,"your key",date);
+                String objectName = "your key"; // 保证urlEncoder之后字串不变
+                URL objectUrl = util.getS3Client(getApplicationContext()).generatePresignedUrl(Constants.BUCKET_NAME,objectName,date);
                 mEditText.setText(objectUrl.toString());
             }
         });
@@ -501,7 +502,7 @@ public class UploadActivity extends ListActivity {
          * startActivityForResult -> onActivityResult -> beginUpload -> onResume
          * -> set listeners to in progress transfers.
          */
-        // observer.setTransferListener(new UploadListener());
+         observer.setTransferListener(new UploadListener());
     }
 
     /*
