@@ -51,6 +51,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -414,7 +415,20 @@ public class UploadActivity extends ListActivity {
                 Date date = new Date(currentTime);
                 String objectName = "your key"; // 保证urlEncoder之后字串不变
                 URL objectUrl = util.getS3Client(getApplicationContext()).generatePresignedUrl(Constants.BUCKET_NAME,objectName,date);
-                mEditText.setText(objectUrl.toString());
+                String getStr = objectUrl.toString();
+                String endStr = getStr.substring(getStr.indexOf("?"));
+                getStr = getStr.substring(0, getStr.indexOf("?"));
+                int i = getStr.lastIndexOf("/");
+                String replaceStr = getStr.substring(i+1);
+                String decoded = "";
+                try {
+                    decoded = URLDecoder.decode(replaceStr, "UTF-8");
+                    decoded = URLDecoder.decode(decoded, "UTF-8");
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+                mEditText.setText(getStr.substring(0,i) + "/"+ decoded + endStr);
+                Log.d(TAG, "onClick: "+ getStr.substring(0,i) + "/"+ decoded + endStr);
             }
         });
 
