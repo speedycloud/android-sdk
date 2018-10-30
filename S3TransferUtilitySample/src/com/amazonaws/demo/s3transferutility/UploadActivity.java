@@ -483,14 +483,23 @@ public class UploadActivity extends ListActivity {
     /*
      * Begins to upload the file specified by the file path.
      */
-    private void beginUpload(String filePath) {
+    private void beginUpload(final String filePath) {
         if (filePath == null) {
             Toast.makeText(this, "Could not find the filepath of the selected file",
                     Toast.LENGTH_LONG).show();
             return;
         }
 
+        // another call
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                File file = new File(filePath);
+//                util.getS3Client(getApplicationContext()).putObject(Constants.BUCKET_NAME,file.getName(),file);
+//            }
+//        }).start();
         File file = new File(filePath);
+
         TransferObserver observer = transferUtility.upload(Constants.BUCKET_NAME,
                 file.getName(),
                 file);
@@ -535,7 +544,7 @@ public class UploadActivity extends ListActivity {
          * startActivityForResult -> onActivityResult -> beginUpload -> onResume
          * -> set listeners to in progress transfers.
          */
-        // observer.setTransferListener(new UploadListener());
+//         observer.setTransferListener(new UploadListener());
     }
 
     /*
