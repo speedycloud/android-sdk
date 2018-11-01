@@ -47,6 +47,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferType;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+import com.amazonaws.services.s3.model.PutObjectResult;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -483,35 +484,39 @@ public class UploadActivity extends ListActivity {
     /*
      * Begins to upload the file specified by the file path.
      */
-    private void beginUpload(final String filePath) {
+    private void beginUpload(String filePath) {
         if (filePath == null) {
             Toast.makeText(this, "Could not find the filepath of the selected file",
                     Toast.LENGTH_LONG).show();
             return;
         }
 
-        // another call
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                File file = new File(filePath);
-//                util.getS3Client(getApplicationContext()).putObject(Constants.BUCKET_NAME,file.getName(),file);
-//            }
-//        }).start();
-        File file = new File(filePath);
-
-        TransferObserver observer = transferUtility.upload(Constants.BUCKET_NAME,
-                file.getName(),
-                file);
-
-        /*
-         * Note that usually we set the transfer listener after initializing the
-         * transfer. However it isn't required in this sample app. The flow is
-         * click upload button -> start an activity for image selection
-         * startActivityForResult -> onActivityResult -> beginUpload -> onResume
-         * -> set listeners to in progress transfers.
-         */
-         observer.setTransferListener(new UploadListener());
+        final File file = new File(filePath);
+        if(file.getTotalSpace() > 5 * 1024 * 1024){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    PutObjectResult res = util.getS3Client(getApplicationContext()).putObject(Constants.BUCKET_NAME,file.getName(),file);
+                    if(res.getETag().length() > 0) {
+                        Log.d(TAG, "run: " + "上传完成");
+                    }else{
+                        Log.d(TAG, "run: " + "上传失败");
+                    }
+                }
+            }).start();
+        }else{
+            TransferObserver observer = transferUtility.upload(Constants.BUCKET_NAME,
+                    file.getName(),
+                    file);
+            /*
+             * Note that usually we set the transfer listener after initializing the
+             * transfer. However it isn't required in this sample app. The flow is
+             * click upload button -> start an activity for image selection
+             * startActivityForResult -> onActivityResult -> beginUpload -> onResume
+             * -> set listeners to in progress transfers.
+             */
+            observer.setTransferListener(new UploadListener());
+        }
     }
 
     /*
